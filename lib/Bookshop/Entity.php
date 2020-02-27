@@ -5,7 +5,7 @@ interface IData {
     public function getId() : int;
 }
 
-class Entity implements IData {
+class Entity extends BaseObject implements IData  {
 
     private $id;
 
