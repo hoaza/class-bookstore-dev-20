@@ -1,9 +1,9 @@
 <?php require_once('views/partials/header.php'); ?>
 <div class="page-header">
-    <h2>Welcome</h2>
+    <h2>List</h2>
 </div>
 
-<p>SCM4 Bookshop</p>
+
 
 
 
