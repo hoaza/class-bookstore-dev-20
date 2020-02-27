@@ -7,6 +7,7 @@
 
 <?php 
 $book = new Bookshop\Book(1, 1, "ein title", "ein autor", 12.45);
+$book->subtitle = "test";
 print_r($book); ?>
 
 <?php require_once('views/partials/footer.php'); ?>
