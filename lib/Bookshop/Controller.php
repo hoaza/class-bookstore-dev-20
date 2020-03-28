@@ -12,7 +12,10 @@ class Controller extends BaseObject
     const CC_NUMBER = 'cardNumber';
     const ACTION_ADD = 'addToCart';
     const ACTION_REMOVE = 'removeFromCart';
-
+    const USER_NAME = 'userName';
+    const USER_PASSWORD = 'password';
+    const ACTION_LOGIN = 'login';
+    const ACTION_LOGOUT = 'logout';
 
     private static $instance = false;
 

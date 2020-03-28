@@ -22,11 +22,11 @@ if (isset($errors) && is_array($errors)): ?>
         <hr />
      <div class="col-sm-8">
       <button class="btn btn-primary btn-xs" type="button">
-        <span class="badge"><?php // echo Bookshop\Util::escape($cartSize); ?></span> items in cart
+        <span class="badge"><?php echo Bookshop\Util::escape($cartSize); ?></span> items in cart
       </button>
      </div>
         <div class="col-sm-4 pull-right">
-            <p><?php // echo Bookshop\Util::escape(strftime('%c')); ?></p>
+            <p><?php echo Bookshop\Util::escape(strftime('%c')); ?></p>
             </div>
 
 
