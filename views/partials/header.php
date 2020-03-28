@@ -3,6 +3,10 @@ use Bookshop\Util, Bookshop\AuthenticationManager, Bookshop\ShoppingCart;
 $user = AuthenticationManager::getAuthenticatedUser();
 $cartSize = ShoppingCart::size();
 
+if (isset($_GET['errors'])) {
+    $errors = unserialize(urldecode($_GET['errors']));
+}
+
 ?>
 
 <!DOCTYPE html>

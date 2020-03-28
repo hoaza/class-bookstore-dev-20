@@ -12,10 +12,12 @@ class Controller extends BaseObject
     const CC_NUMBER = 'cardNumber';
     const ACTION_ADD = 'addToCart';
     const ACTION_REMOVE = 'removeFromCart';
-    const USER_NAME = 'userName';
-    const USER_PASSWORD = 'password';
     const ACTION_LOGIN = 'login';
     const ACTION_LOGOUT = 'logout';
+    const ACTION_ORDER = 'placeOrder';
+    const USER_NAME = 'userName';
+    const USER_PASSWORD = 'password';
+
 
     private static $instance = false;
 
@@ -42,6 +44,7 @@ class Controller extends BaseObject
 
         $action = $_REQUEST[self::ACTION];
 
+
         switch ($action) {
             case self::ACTION_ADD :
                 ShoppingCart::add((int) $_REQUEST['bookId']);
@@ -56,6 +59,17 @@ class Controller extends BaseObject
                     $this->forwardRequest(array('Invalid user name or password.'));
                 }
                 Util::redirect();
+                break;
+
+            case self::ACTION_LOGOUT :
+                //sign out current user
+                AuthenticationManager::signOut();
+                Util::redirect();
+                break;
+
+            default :
+                throw new \Exception('Unknown controller action: ' . $action);
+                return null;
                 break;
 
         }
