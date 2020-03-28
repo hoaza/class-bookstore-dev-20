@@ -10,6 +10,9 @@ spl_autoload_register(function ($class) {
     }
 });
 
+// create session context
+Bookshop\SessionContext::create();
+
 /* switch different DataManagers */
 $class = 'mock';
 require_once(__DIR__ .'/../lib/Data/DataManager_'  . $class . '.php');
