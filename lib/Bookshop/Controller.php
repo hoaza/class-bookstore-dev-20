@@ -67,6 +67,16 @@ class Controller extends BaseObject
                 Util::redirect();
                 break;
 
+            case self::ACTION_ORDER :
+                $user = AuthenticationManager::getAuthenticatedUser();
+                if ($user == null) {
+                    $this->forwardRequest(['Not logged in.']);
+                }
+                if (!$this->processCheckout($_POST[self::CC_NAME], $_POST[self::CC_NUMBER])) {
+                    $this->forwardRequest(['Checkout failed']);
+                }
+                break;
+
             default :
                 throw new \Exception('Unknown controller action: ' . $action);
                 return null;
@@ -74,6 +84,39 @@ class Controller extends BaseObject
 
         }
 
+    }
+
+
+    protected function processCheckout (string $nameOnCard = null, string $cardNumber = null) : bool {
+        $errors = [];
+
+        if ($nameOnCard == null || strlen($nameOnCard) == 0) {
+            $errors[] = 'Invalid name on card';
+        }
+        if ($cardNumber == null || strlen($cardNumber) != 16 || !ctype_digit($cardNumber)) {
+            $errors[] = 'Card number must be sixteen digits';
+        }
+
+        if (sizeof($errors) > 0) {
+            $this->forwardRequest($errors);
+            return false;
+        }
+
+        // check cart
+        if (ShoppingCart::size() == 0) {
+            $this->forwardRequest(['Shopping cart is empty']);
+            return false;
+        }
+
+        $user = AuthenticationManager::getAuthenticatedUser();
+        $orderId = \Data\DataManager::createOrder($user->getId(), ShoppingCart::getAll(), $nameOnCard, $cardNumber);
+        if (!$orderId) {
+            $this->forwardRequest(['Could not create order']);
+            return false;
+        }
+        ShoppingCart::clear();
+        Util::redirect('index.php?view=success&orderId=' . rawurlencode($orderId));
+        return true;
     }
 
 
