@@ -24,7 +24,7 @@ class AuthenticationManager extends BaseObject
     }
 
     public static function isAuthenticated() : bool {
-        return isst($_SESSION['user']);
+        return isset($_SESSION['user']);
     }
 
     public static function getAuthenticatedUser () {
