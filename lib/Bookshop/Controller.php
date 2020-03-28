@@ -42,7 +42,13 @@ class Controller extends BaseObject
         switch ($action) {
             case self::ACTION_ADD :
                 ShoppingCart::add((int) $_REQUEST['bookId']);
+                Util::redirect();
                 break;
+            case self::ACTION_REMOVE :
+                ShoppingCart::remove((int) $_REQUEST['bookId']);
+                Util::redirect();
+                break;
+
 
 
         }
