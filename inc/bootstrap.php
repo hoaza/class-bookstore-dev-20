@@ -10,5 +10,6 @@ spl_autoload_register(function ($class) {
     }
 });
 
+/* switch different DataManagers */
 $class = 'mock';
 require_once(__DIR__ .'/../lib/Data/DataManager_'  . $class . '.php');
