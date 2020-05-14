@@ -79,6 +79,10 @@ class DataManager implements IDataManager
         self::$__connection = null;
     }
 
+    private static function lastInsertId ($connection) {
+        return $connection->lastInsertId();
+    }
+
     /**
      * get the categories
      *
@@ -226,8 +230,39 @@ class DataManager implements IDataManager
      */
     public static function createOrder(int $userId, array $bookIds, string $nameOnCard, string $cardNumber): int
     {
-        return rand();
+        $con = self::getConnection();
+        $con->beginTransaction();
+
+        try {
+
+            self::query ($con, "
+                INSERT INTO orders ( 
+                    userId, 
+                    creditCardNumber, 
+                    creditCardHolder
+                ) VALUES (
+                    ?, ?, ? 
+                );
+            ", [$userId, $cardNumber, $nameOnCard]);
+
+            $orderId = self::lastInsertId($con);
+            foreach ($bookIds as $bookId) {
+                self::query($con, "
+                    INSERT INTO orderedbooks (
+                        orderId, 
+                        bookId 
+                    ) VALUES (
+                        ?,? 
+                    );", [$orderId, $bookId]);
+            }
+            $con->commit();
+        }
+        catch (\Exception $e) {
+            $con->rollBack();
+            $orderId = null;
+        }
+        self::closeConnection();
+        return $orderId;
+
     }
-
-
 }
