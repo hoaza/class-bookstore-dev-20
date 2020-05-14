@@ -5,6 +5,7 @@ namespace Data;
 use Bookshop\Category;
 use Bookshop\Book;
 use Bookshop\User;
+use Bookshop\PagingResult;
 
 
 class DataManager implements IDataManager
@@ -150,21 +151,54 @@ class DataManager implements IDataManager
      */
     public static function getBooksForSearchCriteria(string $term): array
     {
-
+        $books = [];
+        $con = self::getConnection();
+        $res = self::query($con, "
+          SELECT id, categoryId, title, author, price 
+          FROM books 
+          WHERE title LIKE ?;
+          ", ["%" . $term . "%"]);
+        while ($book = self::fetchObject($res)) {
+            $books[] = new Book($book->id, $book->categoryId, $book->title, $book->author, $book->price);
+        }
+        self::close($res);
+        self::closeConnection($con);
+        return $books;
 
     }
 
     /**
      * get the books per search term – paginated set only
      *
-     * @param string $term search term: book title string match
-     * @param integer $offset start at the nth item
-     * @param integer $numPerPage number of items per page
-     * @return PagingResult
+     * @param string $term  search term: book title string match
+     * @param integer $offset  start at the nth item
+     * @param integer $numPerPage  number of items per page
+     * @return array of Book-items
      */
-    public static function getBooksForSearchCriteriaWithPaging(string $term, int $offset, int $numPerPage): PagingResult
-    {
-
+    public static function getBooksForSearchCriteriaWithPaging($term, $offset, $numPerPage) {
+        $con = self::getConnection();
+        //query total count
+        $res = self::query($con, "
+          SELECT COUNT(*) AS cnt 
+          FROM books 
+          WHERE title LIKE ?;
+      ", ["%" . $term . "%"]);
+        $totalCount = self::fetchObject($res)->cnt;
+        self::close($res);
+        //query books to return
+        $books = [];
+        $res = self::query($con, "
+          SELECT id, categoryId, title, author, price 
+          FROM books 
+          WHERE title 
+          LIKE ? LIMIT ?, ?;
+      ", ["%" . $term . "%", intval($offset), intval($numPerPage)]);
+        while ($book = self::fetchObject($res)) {
+            $books[] = new Book($book->id, $book->categoryId, $book->title, $book->author, $book->price);
+        }
+        self::close($res);
+        self::closeConnection($con);
+        return new PagingResult($books, $offset, $totalCount);
     }
 
     /**
