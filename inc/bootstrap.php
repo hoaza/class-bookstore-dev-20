@@ -11,7 +11,7 @@ spl_autoload_register(function ($class) {
 });
 
 // create session context
-Bookshop\SessionContext::create();
+Webshop\SessionContext::create();
 
 /* switch different DataManagers */
 $mode = 'pdo';

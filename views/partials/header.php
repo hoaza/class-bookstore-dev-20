@@ -1,7 +1,6 @@
 <?php
-use Bookshop\Util, Bookshop\AuthenticationManager, Bookshop\ShoppingCart;
-$user = AuthenticationManager::getAuthenticatedUser();
-$cartSize = ShoppingCart::size();
+use Webshop\Util, Bookshop\AuthenticationManager, Webshop\ShoppingCart;
+$user = Webshop\AuthenticationManager::getAuthenticatedUser();
 
 if (isset($_GET['errors'])) {
     $errors = unserialize(urldecode($_GET['errors']));
@@ -14,7 +13,7 @@ if (isset($_GET['errors'])) {
 <head>
     <meta charset="utf-8">
 
-    <title>SCM4 Book Shop</title>
+    <title>Webshop UX 2020</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -23,7 +22,6 @@ if (isset($_GET['errors'])) {
 
 </head>
 <body>
-
 
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="container-fluid">
@@ -35,9 +33,7 @@ if (isset($_GET['errors'])) {
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">SCM 4 Bookshop (V 2.0)</a>
         </div>
-
 
         <div class="navbar-collapse collapse" id="bs-navbar-collapse-1">
             <ul class="nav navbar-nav">
@@ -47,10 +43,6 @@ if (isset($_GET['errors'])) {
                 <li  <?php if ($view === 'checkout') { ?>class="active"<?php } ?>><a href="index.php?view=checkout">Checkout</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right login">
-                <li>
-                    <a href="index.php?view=checkout">
-                       <span class="badge"><?php echo Util::escape($cartSize); ?></span> <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span></a>
-                </li>
                 <li class="dropdown">
                     <?php  if ($user == null): ?>
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -70,7 +62,7 @@ if (isset($_GET['errors'])) {
                 </a>
                 <ul class="dropdown-menu" role="menu">
                   <li class="centered">
-                    <form method="post" action="<?php  echo Util::action(Bookshop\Controller::ACTION_LOGOUT); ?>">
+                    <form method="post" action="<?php  echo Util::action(Webshop\Controller::ACTION_LOGOUT); ?>">
                       <input class="btn btn-xs" role="button" type="submit" value="Logout" />
                     </form>
                     </li>

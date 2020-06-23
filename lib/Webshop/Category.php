@@ -1,5 +1,5 @@
 <?php
-namespace Bookshop;
+namespace Webshop;
 /**
  * Category
  * 

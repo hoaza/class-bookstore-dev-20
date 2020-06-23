@@ -2,11 +2,13 @@
 
 namespace Data;
 
-use Bookshop\Category;
-use Bookshop\Book;
-use Bookshop\User;
-use Bookshop\PagingResult;
-
+use DateTime;
+use Webshop\Category;
+use Webshop\Article;
+use Webshop\User;
+use Webshop\PagingResult;
+use Webshop\ShoppingList;
+use Webshop\UserType;
 
 class DataManager implements IDataManager
 {
@@ -20,15 +22,13 @@ class DataManager implements IDataManager
 
             $type = 'mysql';
             $host = 'localhost';
-            $name = 'fh_scm4_bookshop';
+            $name = 'fh_2020_scm4_s1810307014';
             $user = 'root';
             $pass = '';
 
             self::$__connection = new \PDO($type . ':host=' . $host . ';dbname=' . $name . ';charset=utf8', $user, $pass);
         }
         return self::$__connection;
-
-
     }
 
     public static function exposeConnection()
@@ -59,7 +59,7 @@ class DataManager implements IDataManager
             }
             $statement->execute();
         } catch (\Exception $e) {
-            die ($e->getMessage());
+            die($e->getMessage());
         }
         return $statement;
     }
@@ -80,7 +80,8 @@ class DataManager implements IDataManager
         self::$__connection = null;
     }
 
-    private static function lastInsertId ($connection) {
+    private static function lastInsertId($connection)
+    {
         return $connection->lastInsertId();
     }
 
@@ -97,7 +98,7 @@ class DataManager implements IDataManager
         $con = self::getConnection();
         $res = self::query($con, "
             SELECT id, name 
-            FROM categories;
+            FROM category;
         ");
 
         while ($cat = self::fetchObject($res)) {
@@ -106,7 +107,6 @@ class DataManager implements IDataManager
         self::close($res);
         self::closeConnection();
         return $categories;
-
     }
 
     /**
@@ -115,25 +115,90 @@ class DataManager implements IDataManager
      * @param integer $categoryId numeric id of the category
      * @return array of Book-items
      */
-    public static function getBooksByCategory(int $categoryId): array
+    public static function getArticlesByCategory(int $categoryId): array
     {
-        $books = [];
+        $articles = [];
         $con = self::getConnection();
         $res = self::query($con, "
-            SELECT id, categoryId, title, author, price  
-            FROM books 
+            SELECT id, categoryId, shoppingListId, caption, quantity, maxPrice  
+            FROM article 
             WHERE categoryId = ?;
         ", [$categoryId]);
 
-        while ($book = self::fetchObject($res)) {
-            $books[] = new Book($book->id, $book->categoryId, $book->title, $book->author, $book->price);
+        while ($article = self::fetchObject($res)) {
+            $articles[] = new Article($article->id, $article->categoryId, $article->shoppingListId, $article->caption, $article->quantity, $article->maxPrice);
         }
         self::close($res);
         self::closeConnection();
-        return $books;
-
-
+        return $articles;
     }
+
+    /**
+     * get the books per category
+     *
+     * @param integer $categoryId numeric id of the category
+     * @return array of Book-items
+     */
+    public static function getArticlesByShoppingListId(int $shoppingListId): array
+    {
+        $articles = [];
+        $con = self::getConnection();
+        $res = self::query($con, "
+            SELECT id, categoryId, shoppingListId, caption, quantity, maxPrice  
+            FROM article 
+            WHERE shoppingListId = ?;
+        ", [$shoppingListId]);
+
+        while ($article = self::fetchObject($res)) {
+            $articles[] = new Article($article->id, $article->categoryId, $article->shoppingListId, $article->caption, $article->quantity, $article->maxPrice);
+        }
+        self::close($res);
+        self::closeConnection();
+        return $articles;
+    }
+
+
+
+    /**
+     * get the books per category
+     *
+     * @param integer $categoryId numeric id of the category
+     * @return array of Book-items
+     */
+    public static function getShoppingListsBy(int $userId = null, bool $closed = null, int $entrepreneurUserId = null): array
+    {
+        $shoppintLists = [];
+        $con = self::getConnection();
+        $res = self::query($con, "
+            SELECT id, caption, dueDateTime, closed, entrepreneurUserId, pricePaid  
+            FROM shoppintlist 
+            WHERE 1 = 1 "
+            + ($userId == null ? "" : ("\AND userId = " + $userId)) +
+            + ($closed == null ? "" : ("\AND closed = " + $closed)) +
+                + ($entrepreneurUserId == null ? "" : ("\AND closed = " + $entrepreneurUserId)) +
+                    ";
+        ");
+
+        while ($shoppintList = self::fetchObject($res)) {
+            $shoppintLists[] = new ShoppingList(
+                $shoppintList->id,
+                $shoppintList->userId,
+                $shoppintList->caption,
+                $shoppintList->dueDateTime,
+                $shoppintList->closed,
+                $shoppintList->entrepreneurUserId,
+                $shoppintList->pricePaid
+            );
+        }
+        self::close($res);
+        self::closeConnection();
+        return $shoppintLists;
+    }
+
+
+
+
+
 
     /**
      * get the books per search term
@@ -149,23 +214,23 @@ class DataManager implements IDataManager
      * @param string $term search term: book title string match
      * @return array of Book-items
      */
-    public static function getBooksForSearchCriteria(string $term): array
-    {
-        $books = [];
-        $con = self::getConnection();
-        $res = self::query($con, "
-          SELECT id, categoryId, title, author, price 
-          FROM books 
-          WHERE title LIKE ?;
-          ", ["%" . $term . "%"]);
-        while ($book = self::fetchObject($res)) {
-            $books[] = new Book($book->id, $book->categoryId, $book->title, $book->author, $book->price);
-        }
-        self::close($res);
-        self::closeConnection($con);
-        return $books;
+    // public static function getBooksForSearchCriteria(string $term): array
+    // {
+    //     $books = [];
+    //     $con = self::getConnection();
+    //     $res = self::query($con, "
+    //       SELECT id, categoryId, title, author, price 
+    //       FROM books 
+    //       WHERE title LIKE ?;
+    //       ", ["%" . $term . "%"]);
+    //     while ($book = self::fetchObject($res)) {
+    //         $books[] = new Book($book->id, $book->categoryId, $book->title, $book->author, $book->price);
+    //     }
+    //     self::close($res);
+    //     self::closeConnection($con);
+    //     return $books;
 
-    }
+    // }
 
     /**
      * get the books per search term – paginated set only
@@ -175,31 +240,31 @@ class DataManager implements IDataManager
      * @param integer $numPerPage  number of items per page
      * @return array of Book-items
      */
-    public static function getBooksForSearchCriteriaWithPaging($term, $offset, $numPerPage) {
-        $con = self::getConnection();
-        //query total count
-        $res = self::query($con, "
-          SELECT COUNT(*) AS cnt 
-          FROM books 
-          WHERE title LIKE ?;
-      ", ["%" . $term . "%"]);
-        $totalCount = self::fetchObject($res)->cnt;
-        self::close($res);
-        //query books to return
-        $books = [];
-        $res = self::query($con, "
-          SELECT id, categoryId, title, author, price 
-          FROM books 
-          WHERE title 
-          LIKE ? LIMIT ?, ?;
-      ", ["%" . $term . "%", intval($offset), intval($numPerPage)]);
-        while ($book = self::fetchObject($res)) {
-            $books[] = new Book($book->id, $book->categoryId, $book->title, $book->author, $book->price);
-        }
-        self::close($res);
-        self::closeConnection($con);
-        return new PagingResult($books, $offset, $totalCount);
-    }
+    // public static function getBooksForSearchCriteriaWithPaging($term, $offset, $numPerPage) {
+    //     $con = self::getConnection();
+    //     //query total count
+    //     $res = self::query($con, "
+    //       SELECT COUNT(*) AS cnt 
+    //       FROM books 
+    //       WHERE title LIKE ?;
+    //   ", ["%" . $term . "%"]);
+    //     $totalCount = self::fetchObject($res)->cnt;
+    //     self::close($res);
+    //     //query books to return
+    //     $books = [];
+    //     $res = self::query($con, "
+    //       SELECT id, categoryId, title, author, price 
+    //       FROM books 
+    //       WHERE title 
+    //       LIKE ? LIMIT ?, ?;
+    //   ", ["%" . $term . "%", intval($offset), intval($numPerPage)]);
+    //     while ($book = self::fetchObject($res)) {
+    //         $books[] = new Book($book->id, $book->categoryId, $book->title, $book->author, $book->price);
+    //     }
+    //     self::close($res);
+    //     self::closeConnection($con);
+    //     return new PagingResult($books, $offset, $totalCount);
+    // }
 
     /**
      * get the User item by id
@@ -212,12 +277,12 @@ class DataManager implements IDataManager
         $user = null;
         $con = self::getConnection();
         $res = self::query($con, " 
-            SELECT id, userName, passwordHash 
-            FROM users 
+            SELECT id, userName, passwordHash, type 
+            FROM user
             WHERE id = ?;
         ", [$userId]);
         if ($u = self::fetchObject($res)) {
-            $user = new User($u->id, $u->userName, $u->passwordHash);
+            $user = new User($u->id, $u->userName, $u->passwordHash, $u->type);
         }
         self::close($res);
         self::closeConnection($con);
@@ -234,16 +299,28 @@ class DataManager implements IDataManager
      */
     public static function getUserByUserName(string $userName)
     {
-
         $user = null;
         $con = self::getConnection();
         $res = self::query($con, " 
-            SELECT id, userName, passwordHash 
-            FROM users 
+            SELECT id, userName, passwordHash, type 
+            FROM user
             WHERE userName = ?;
         ", [$userName]);
         if ($u = self::fetchObject($res)) {
-            $user = new User($u->id, $u->userName, $u->passwordHash);
+            // UserType $type = UserType::NEEDSHELP;
+
+            // if ($u->type == "NEEDSHELP" ? UserType::NEEDSHELP : UserType::ENTREPRENEUR){
+            //     $type = UserType::NEEDSHELP;
+            // }
+            // else if ($u->type == "ENTREPRENEUR"){
+            //     $type = UserType::ENTREPRENEUR;
+            // }
+            // else{
+            //     throw new Exception("UserType " + $u->type + " doesnt exists in Code");
+            // }
+ 
+
+            $user = new User($u->id, $u->userName, $u->passwordHash, $u->type);
         }
         self::close($res);
         self::closeConnection($con);
@@ -262,41 +339,39 @@ class DataManager implements IDataManager
      * @param string $cardNumber cc number
      * @return integer
      */
-    public static function createOrder(int $userId, array $bookIds, string $nameOnCard, string $cardNumber): int
-    {
+    public static function createShoppingList(
+        int $userId,
+        string $caption,
+        DateTime $dueDateTime,
+        bool $closed,
+        int $entrepreneurUserId,
+        float $pricePaid
+    ): int {
         $con = self::getConnection();
         $con->beginTransaction();
 
         try {
 
-            self::query ($con, "
-                INSERT INTO orders ( 
+            self::query($con, "
+                INSERT INTO shoppinglist ( 
                     userId, 
-                    creditCardNumber, 
-                    creditCardHolder
+                    caption, 
+                    dueDateTime,
+                    closed,
+                    entrepreneurUserId,
+                    pricePaid
                 ) VALUES (
-                    ?, ?, ? 
+                    ?, ?, ?, ?, ?, ?
                 );
-            ", [$userId, $cardNumber, $nameOnCard]);
+            ", [$userId, $caption, $dueDateTime, $closed, $entrepreneurUserId, $pricePaid]);
 
-            $orderId = self::lastInsertId($con);
-            foreach ($bookIds as $bookId) {
-                self::query($con, "
-                    INSERT INTO orderedbooks (
-                        orderId, 
-                        bookId 
-                    ) VALUES (
-                        ?,? 
-                    );", [$orderId, $bookId]);
-            }
+            $shoppingListId = self::lastInsertId($con);
             $con->commit();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $con->rollBack();
-            $orderId = null;
+            $shoppingListId = null;
         }
         self::closeConnection();
-        return $orderId;
-
+        return $shoppingListId;
     }
 }

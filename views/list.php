@@ -1,11 +1,11 @@
 <?php 
 
 use Data\DataManager;
-use Bookshop\Util;
+use Webshop\Util;
 
 $categories = DataManager::getCategories();
 $categoryId = $_REQUEST['categoryId'] ?? null;
-$books = (isset($categoryId) && ((int) $categoryId > 0)) ? DataManager::getBooksByCategory((int) $categoryId) : null;
+// $books = (isset($categoryId) && ((int) $categoryId > 0)) ? DataManager::getBooksByCategory((int) $categoryId) : null;
 
 
 require_once('views/partials/header.php'); ?>
@@ -23,7 +23,7 @@ require_once('views/partials/header.php'); ?>
     <?php } ?>    
 </ul>
 
-<?php if (isset($books)) : ?>
+<!-- <?php if (isset($books)) : ?>
     <?php
     if (sizeof($books) > 0) :
         require('views/partials/booklist.php');
@@ -33,7 +33,7 @@ require_once('views/partials/header.php'); ?>
     <?php endif; ?>
 <?php else : ?>
     <div class="alert alert-info" role="alert">Please select a category.</div>
-<?php endif; ?>
+<?php endif; ?> -->
 
 <?php require_once('views/partials/footer.php'); ?>
 

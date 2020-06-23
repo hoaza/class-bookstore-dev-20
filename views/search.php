@@ -1,6 +1,6 @@
 <?php
 
-use Bookshop\Util;
+use Webshop\Util;
 
 $title  = isset($_REQUEST['title']) ?
     $_REQUEST['title'] :
@@ -12,9 +12,9 @@ $epp    = isset($_REQUEST['epp']) ?
     $_REQUEST['epp'] :
     4;  // epp … entries per page
 
-$page = isset($title) ?
-    Data\DataManager::getBooksForSearchCriteriaWithPaging($title, $offset, $epp) :
-    null;
+// $page = isset($title) ?
+//     Data\DataManager::getBooksForSearchCriteriaWithPaging($title, $offset, $epp) :
+//     null;
 
 require_once('views/partials/header.php');
 ?>
@@ -32,7 +32,7 @@ require_once('views/partials/header.php');
         </form>
     </div>
 
-
+<!-- 
 <?php if (isset($page)): ?>
 
     <h3>Search Result</h3>
@@ -66,6 +66,6 @@ require_once('views/partials/header.php');
         <p>No matching books found.</p>
     <?php endif; ?>
 
-<?php endif; ?>
+<?php endif; ?> -->
 
 <?php require_once('views/partials/footer.php');
