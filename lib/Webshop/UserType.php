@@ -38,7 +38,7 @@ abstract class BasicEnum {
 
 }
 
-abstract class UserType extends BasicEnum
+class UserType extends BasicEnum
 {
     const NEEDSHELP = "NEEDSHELP";
     const ENTREPRENEUR = "ENTREPRENEUR";

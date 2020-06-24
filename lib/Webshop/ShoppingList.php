@@ -7,7 +7,7 @@ use DateTime;
 
 SessionContext::create();
 
-class ShoppingList extends BaseObject
+class ShoppingList extends Entity
 {
     private $userId;
     private $caption;
@@ -20,10 +20,10 @@ class ShoppingList extends BaseObject
         int $id,
         int $userId,
         string $caption,
-        DateTime $dueDateTime,
+        $dueDateTime,
         bool $closed,
-        int $entrepreneurUserId,
-        float $pricePaid
+        ?int $entrepreneurUserId,
+        $pricePaid
     ) {
         parent::__construct($id);
         $this->userId = $userId;
@@ -44,7 +44,7 @@ class ShoppingList extends BaseObject
         return $this->caption;
     }
 
-    public function getDueDateTime(): DateTime
+    public function getDueDateTime(): string
     {
         return $this->dueDateTime;
     }
@@ -54,12 +54,12 @@ class ShoppingList extends BaseObject
         return $this->closed;
     }
 
-    public function getEntrepreneurUserId(): int
+    public function getEntrepreneurUserId(): ?int
     {
         return $this->entrepreneurUserId;
     }
 
-    public function getPricePaid(): float
+    public function getPricePaid()
     {
         return $this->pricePaid;
     }

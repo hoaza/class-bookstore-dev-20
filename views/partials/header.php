@@ -1,6 +1,6 @@
 <?php
 
-use Webshop\Util, Webshop\AuthenticationManager, Webshop\ShoppingCart;
+use Webshop\Util;
 
 $user = Webshop\AuthenticationManager::getAuthenticatedUser();
 
@@ -37,15 +37,16 @@ if (isset($_GET['errors'])) {
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand"><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Webshop</a>
+                <a class="navbar-brand" href="index.php"><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span> Webshop</a>
             </div>
 
             <div class="navbar-collapse collapse" id="bs-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li <?php if ($view === 'welcome') { ?>class="active" <?php } ?>><a href="index.php">Home</a></li>
-                    <li <?php if ($view === 'list') { ?>class="active" <?php } ?>><a href="index.php?view=list">List</a></li>
-                    <li <?php if ($view === 'search') { ?>class="active" <?php } ?>><a href="index.php?view=search">Search</a></li>
-                    <li <?php if ($view === 'checkout') { ?>class="active" <?php } ?>><a href="index.php?view=checkout">Checkout</a></li>
+                    <?php if ($user != null) { ?>
+                        <li <?php if ($view === 'openShopLists') { ?>class="active" <?php } ?>><a href="index.php?view=<?php echo ($user->getTypeString()) ?>/openShopLists">Offene Einkaufslisten</a></li>
+                        <li <?php if ($view === 'listsInProgress') { ?>class="active" <?php } ?>><a href="index.php?view=<?php echo ($user->getTypeString()) ?>/listsInProgress">Einkaufslisten In Abarbeitung</a></li>
+                        <li <?php if ($view === 'closedLists') { ?>class="active" <?php } ?>><a href="index.php?view=<?php echo ($user->getTypeString()) ?>/closedLists">Abgearbeitete Einkaufslisten</a></li>
+                    <?php } ?>
                 </ul>
                 <ul class="nav navbar-nav navbar-right login">
                     <li class="dropdown">

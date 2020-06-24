@@ -2,6 +2,8 @@
 
 namespace Webshop;
 
+use Exception;
+
 /**
  * User
  * 
@@ -22,6 +24,11 @@ class User extends Entity
     parent::__construct($id);
     $this->userName = $userName;
     $this->passwordHash = $passwordHash;
+
+    if (UserType::isValidName($type) == false){
+      throw new Exception("UserType not existing " + $type);
+    }
+
     $this->type = $type;
   }
 
@@ -35,8 +42,18 @@ class User extends Entity
     return $this->passwordHash;
   }
 
-  public function getUserType(): string
+  public function getTypeString(): string
   {
     return $this->type;
   }
+
+  public function isTypeOf(string $type) : bool {
+    if ($this->type == $type){
+      return true;
+    }
+    
+    return false;
+  }
+
+
 }

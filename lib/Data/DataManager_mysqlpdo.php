@@ -55,6 +55,9 @@ class DataManager implements IDataManager
                 if (is_string($param)) {
                     $statement->bindValue($i, $param, \PDO::PARAM_STR);
                 }
+                if (is_bool($param)) {
+                    $statement->bindValue($i, $param, \PDO::PARAM_BOOL);
+                }
                 $i++;
             }
             $statement->execute();
@@ -165,19 +168,17 @@ class DataManager implements IDataManager
      * @param integer $categoryId numeric id of the category
      * @return array of Book-items
      */
-    public static function getShoppingListsBy(int $userId = null, bool $closed = null, int $entrepreneurUserId = null): array
+    public static function getUnlinkedShoppingListsByState(bool $closed): array
     {
         $shoppintLists = [];
         $con = self::getConnection();
         $res = self::query($con, "
-            SELECT id, caption, dueDateTime, closed, entrepreneurUserId, pricePaid  
-            FROM shoppintlist 
-            WHERE 1 = 1 "
-            + ($userId == null ? "" : ("\AND userId = " + $userId)) +
-            + ($closed == null ? "" : ("\AND closed = " + $closed)) +
-                + ($entrepreneurUserId == null ? "" : ("\AND closed = " + $entrepreneurUserId)) +
-                    ";
-        ");
+            SELECT id, userId, caption, dueDateTime, closed, entrepreneurUserId, pricePaid  
+            FROM shoppinglist 
+            WHERE 1 = 1
+                AND entrepreneurUserId is NULL
+                AND closed = ?;", 
+                [$closed]);
 
         while ($shoppintList = self::fetchObject($res)) {
             $shoppintLists[] = new ShoppingList(
@@ -195,6 +196,109 @@ class DataManager implements IDataManager
         return $shoppintLists;
     }
 
+    /**
+     * get the books per category
+     *
+     * @param integer $categoryId numeric id of the category
+     * @return array of Book-items
+     */
+    public static function getShoppingListsByStateAndEntrepreneurId(bool $closed, int $entrepreneurUserId): array
+    {
+        $shoppintLists = [];
+        $con = self::getConnection();
+        $res = self::query($con, "
+            SELECT id, userId, caption, dueDateTime, closed, entrepreneurUserId, pricePaid  
+            FROM shoppinglist 
+            WHERE 1 = 1 
+                AND closed = ?
+                AND entrepreneurUserId = ?;", 
+                [$closed, $entrepreneurUserId]);
+
+        while ($shoppintList = self::fetchObject($res)) {
+            $shoppintLists[] = new ShoppingList(
+                $shoppintList->id,
+                $shoppintList->userId,
+                $shoppintList->caption,
+                $shoppintList->dueDateTime,
+                $shoppintList->closed,
+                $shoppintList->entrepreneurUserId,
+                $shoppintList->pricePaid
+            );
+        }
+        self::close($res);
+        self::closeConnection();
+        return $shoppintLists;
+    }
+
+    /**
+     * get the books per category
+     *
+     * @param integer $categoryId numeric id of the category
+     * @return array of Book-items
+     */
+    public static function getUnlinkedShoppingListsByUserId(int $userId): array
+    {
+        $shoppintLists = [];
+        $con = self::getConnection();
+        $res = self::query($con, "
+            SELECT id, userId, caption, dueDateTime, closed, entrepreneurUserId, pricePaid  
+            FROM shoppinglist 
+            WHERE 1 = 1
+                AND entrepreneurUserId is NULL
+                AND userId = ?;", 
+                [$userId]);
+
+        while ($shoppintList = self::fetchObject($res)) {
+            $shoppintLists[] = new ShoppingList(
+                $shoppintList->id,
+                $shoppintList->userId,
+                $shoppintList->caption,
+                $shoppintList->dueDateTime,
+                $shoppintList->closed,
+                $shoppintList->entrepreneurUserId,
+                $shoppintList->pricePaid
+            );
+        }
+        self::close($res);
+        self::closeConnection();
+        return $shoppintLists;
+    }
+
+
+/**
+     * get the books per category
+     *
+     * @param integer $categoryId numeric id of the category
+     * @return array of Book-items
+     */
+    public static function getLinkedShoppingListsByStateAndUserId(bool $closed, int $userId): array
+    {
+        $shoppintLists = [];
+        $con = self::getConnection();
+        $res = self::query($con, "
+            SELECT id, userId, caption, dueDateTime, closed, entrepreneurUserId, pricePaid  
+            FROM shoppinglist 
+            WHERE 1 = 1 
+                AND entrepreneurUserId is NOT NULL
+                AND closed = ?
+                AND userId = ?;", 
+                [$closed, $userId]);
+
+        while ($shoppintList = self::fetchObject($res)) {
+            $shoppintLists[] = new ShoppingList(
+                $shoppintList->id,
+                $shoppintList->userId,
+                $shoppintList->caption,
+                $shoppintList->dueDateTime,
+                $shoppintList->closed,
+                $shoppintList->entrepreneurUserId,
+                $shoppintList->pricePaid
+            );
+        }
+        self::close($res);
+        self::closeConnection();
+        return $shoppintLists;
+    }
 
 
 
@@ -309,7 +413,7 @@ class DataManager implements IDataManager
         if ($u = self::fetchObject($res)) {
             // $type = UserType::NEEDSHELP;
 
-            
+
             // if ($u->type == "NEEDSHELP" ? UserType::NEEDSHELP : UserType::ENTREPRENEUR){
             //     $type = UserType::NEEDSHELP;
             // }
@@ -371,7 +475,9 @@ class DataManager implements IDataManager
             $con->rollBack();
             $shoppingListId = null;
         }
+
         self::closeConnection();
+
         return $shoppingListId;
     }
 }
