@@ -5,7 +5,6 @@ namespace Webshop;
 use DateTime;
 
 /**
- * Category
  * 
  * 
  * @extends Entity
