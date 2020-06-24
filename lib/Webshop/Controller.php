@@ -3,6 +3,7 @@
 
 namespace Webshop;
 
+use Exception;
 
 class Controller extends BaseObject
 {
@@ -47,11 +48,11 @@ class Controller extends BaseObject
 
         switch ($action) {
             case self::ACTION_ADD :
-                ShoppingCart::add((int) $_REQUEST['bookId']);
+                ShoppingList::add((int) $_REQUEST['bookId']);
                 Util::redirect();
                 break;
             case self::ACTION_REMOVE :
-                ShoppingCart::remove((int) $_REQUEST['bookId']);
+                ShoppingList::remove((int) $_REQUEST['bookId']);
                 Util::redirect();
                 break;
             case self::ACTION_LOGIN :
@@ -88,34 +89,35 @@ class Controller extends BaseObject
 
 
     protected function processCheckout (string $nameOnCard = null, string $cardNumber = null) : bool {
-        $errors = [];
+        // $errors = [];
 
-        if ($nameOnCard == null || strlen($nameOnCard) == 0) {
-            $errors[] = 'Invalid name on card';
-        }
-        if ($cardNumber == null || strlen($cardNumber) != 16 || !ctype_digit($cardNumber)) {
-            $errors[] = 'Card number must be sixteen digits';
-        }
+        // if ($nameOnCard == null || strlen($nameOnCard) == 0) {
+        //     $errors[] = 'Invalid name on card';
+        // }
+        // if ($cardNumber == null || strlen($cardNumber) != 16 || !ctype_digit($cardNumber)) {
+        //     $errors[] = 'Card number must be sixteen digits';
+        // }
 
-        if (sizeof($errors) > 0) {
-            $this->forwardRequest($errors);
-            return false;
-        }
+        // if (sizeof($errors) > 0) {
+        //     $this->forwardRequest($errors);
+        //     return false;
+        // }
 
-        // check cart
-        if (ShoppingCart::size() == 0) {
-            $this->forwardRequest(['Shopping cart is empty']);
-            return false;
-        }
+        // // check cart
+        // if (ShoppingList::size() == 0) {
+        //     $this->forwardRequest(['Shopping cart is empty']);
+        //     return false;
+        // }
 
-        $user = AuthenticationManager::getAuthenticatedUser();
-        $orderId = \Data\DataManager::createOrder($user->getId(), ShoppingCart::getAll(), $nameOnCard, $cardNumber);
-        if (!$orderId) {
-            $this->forwardRequest(['Could not create order']);
-            return false;
-        }
-        ShoppingCart::clear();
-        Util::redirect('index.php?view=success&orderId=' . rawurlencode($orderId));
+        // $user = AuthenticationManager::getAuthenticatedUser();
+        // $orderId = \Data\DataManager::createOrder($user->getId(), ShoppingList::getAll(), $nameOnCard, $cardNumber);
+        // if (!$orderId) {
+        //     $this->forwardRequest(['Could not create order']);
+        //     return false;
+        // }
+        // ShoppingList::clear();
+        // Util::redirect('index.php?view=success&orderId=' . rawurlencode($orderId));
+
         return true;
     }
 

@@ -15,29 +15,20 @@ if (isset($errors) && is_array($errors)): ?>
 <?php endif; ?>
 
 <!--/display error messages-->
-
     <div class="footer">
 
-<!--display cart info-->
         <hr />
-     <!-- <div class="col-sm-8">
-      <button class="btn btn-primary btn-xs" type="button">
-        <span class="badge"><?php echo Util::escape($cartSize); ?></span> items in cart
-      </button> -->
+  
      </div>
         <div class="col-sm-4 pull-right">
             <p><?php echo Util::escape(strftime('%c')); ?></p>
             </div>
-
-
-<!--/display cart info-->
-
     </div>
-
-</div> <!-- container -->
+</div>
 
   <script src="assets/jquery-1.11.2.min.js"></script>
   <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="assets/main.css">
 
   </body>
 </html>

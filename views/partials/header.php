@@ -20,6 +20,7 @@ if (isset($_GET['errors'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
     <link href="assets/main.css" rel="stylesheet">
 
@@ -58,6 +59,7 @@ if (isset($_GET['errors'])) {
                                     <a href="index.php?view=login">Einloggen</a>
                                 </li>
                             </ul>
+
                         <?php else : ?>
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                 Eingeloggt als: <span class="badge"><?php echo Util::escape($user->getUserName()); ?></span>
