@@ -108,6 +108,15 @@ $addArticleVisible = is_null($list) == false && is_null($userId) == false && $us
                                 </form>
                             </td>
                         <?php } ?>
+                        <?php if ($user->isTypeOf(UserType::ENTREPRENEUR) && $list->getClosed() == false && is_null($list->getEntrepreneurUserId()) == false) { ?>
+                            <td class="add-remove">
+                                <form method="post" action="<?php echo Util::action(Webshop\Controller::ACTION_CHANGE_ARTICLE_DONE, array('articleId' => $article->getId())); ?>">
+                                    <button type="submit" role="button" class="btn btn-default btn-xs btn-warning">
+                                        <span class="glyphicon glyphicon-<?php echo Util::escape($article->getDone() ? "check" : "unchecked"); ?>"></span>
+                                    </button>
+                                </form>
+                            </td>
+                        <?php } ?>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

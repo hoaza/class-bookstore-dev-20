@@ -97,7 +97,7 @@ class DataManager implements IDataManager
         $articles = [];
         $con = self::getConnection();
         $res = self::query($con, "
-            SELECT id, shoppingListId, caption, quantity, maxPrice  
+            SELECT id, shoppingListId, caption, quantity, maxPrice, done  
             FROM article
             WHERE 1 = 1 
                 AND active = 1
@@ -105,7 +105,7 @@ class DataManager implements IDataManager
         ", [$shoppingListId]);
 
         while ($article = self::fetchObject($res)) {
-            $articles[] = new Article($article->id, $article->shoppingListId, $article->caption, $article->quantity, $article->maxPrice);
+            $articles[] = new Article($article->id, $article->shoppingListId, $article->caption, $article->quantity, $article->maxPrice, $article->done);
         }
         self::close($res);
         self::closeConnection();
@@ -315,6 +315,25 @@ class DataManager implements IDataManager
             self::query($con, "
                 UPDATE article 
                 SET active = 0
+                WHERE id = ?
+            ", [$articleId]);
+
+            $con->commit();
+        } catch (\Exception $e) {
+            $con->rollBack();
+        }
+        self::closeConnection();
+    }
+
+    public static function invertArticleDoneStatus(int $articleId)
+    {
+        $con = self::getConnection();
+        $con->beginTransaction();
+
+        try {
+            self::query($con, "
+                UPDATE article 
+                SET done = NOT done
                 WHERE id = ?
             ", [$articleId]);
 

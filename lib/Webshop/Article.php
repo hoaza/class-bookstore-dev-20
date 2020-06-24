@@ -8,19 +8,22 @@ class Article extends Entity
     private $caption;
     private $quantity;
     private $maxPrice;
+    private $done;
 
     public function __construct(
         int $id,
         int $shoppingListId,
         string $caption,
         int $quantity,
-        float $maxPrice
+        float $maxPrice,
+        bool $done
     ) {
         parent::__construct($id);
         $this->shoppingListId = $shoppingListId;
         $this->caption = $caption;
         $this->quantity = $quantity;
         $this->maxPrice = $maxPrice;
+        $this->done = $done;
     }
 
     public function getShoppingListId(): int
@@ -41,5 +44,10 @@ class Article extends Entity
     public function getMaxPrice(): float
     {
         return $this->maxPrice;
+    }
+
+    public function getDone(): bool
+    {
+        return $this->done;
     }
 }

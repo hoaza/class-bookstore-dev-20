@@ -5,7 +5,7 @@ namespace Webshop;
 
 use Data\DataManager;
 use Exception;
-use Logger\LoggerManager;
+use Logger\LogManager;
 
 class Controller extends BaseObject
 {
@@ -14,6 +14,9 @@ class Controller extends BaseObject
 
     const ACTION_SHOW_ARTICLES = 'showArticles';
     const ACTION_REMOVE_ARTICLE = 'removeFromShoppingList';
+    const ACTION_CHANGE_ARTICLE_DONE = 'ACTION_CHANGE_ARTICLE_DONE';
+    
+
     const ACTION_REMOVE_LIST = 'ACTION_REMOVE_LIST';
     const ACTION_TAKE_OVER_LIST = 'ACTION_TAKE_OVER_LIST';
     const ACTION_CLOSE_SHOPPING_LIST = 'ACTION_CLOSE_SHOPPING_LIST';
@@ -71,7 +74,7 @@ class Controller extends BaseObject
                     $this->forwardRequest(array('Invalid user name or password.'));
                 }
 
-                LoggerManager::logAction("ACTION_LOGIN");
+                LogManager::logAction("ACTION_LOGIN");
 
                 Util::redirect();
                 break;
@@ -85,7 +88,7 @@ class Controller extends BaseObject
                     $this->forwardRequest(['Sie haben keine Berechtigung dafür!']);
                 }
 
-                LoggerManager::logAction("ACTION_ADD_SHOPPING_LIST");
+                LogManager::logAction("ACTION_ADD_SHOPPING_LIST");
 
                 $caption = $_POST[self::SHOPPING_LIST_CAPTION];
                 $dueDateTime = $_POST[self::SHOPPING_LIST_DUEDATETIME];
@@ -104,6 +107,8 @@ class Controller extends BaseObject
                     $this->forwardRequest(['Sie haben keine Berechtigung dafür!']);
                 }
 
+                LogManager::logAction("ACTION_CLOSE_SHOPPING_LIST");
+
                 $shoppingListId = $_POST[self::SHOPPING_LIST_ID];
                 $maxPrice = $_POST[self::ARTICLE_MAX_PRICE];
 
@@ -121,6 +126,8 @@ class Controller extends BaseObject
                     $this->forwardRequest(['Sie haben keine Berechtigung dafür!']);
                 }
 
+                LogManager::logAction("ACTION_ADD_ARTICLE");
+
                 $shoppingListId = $_POST[self::SHOPPING_LIST_ID];
                 $caption = $_POST[self::ARTICLE_CAPTION];
                 $quantity = $_POST[self::ARTICLE_QUANTITY];
@@ -136,6 +143,9 @@ class Controller extends BaseObject
                 if ($user == null) {
                     $this->forwardRequest(['nicht eingeloggt']);
                 }
+
+                LogManager::logAction("ACTION_SHOW_ARTICLES");
+
                 $shoppingListId = $_REQUEST[self::SHOPPING_LIST_ID];
                 Util::redirect('index.php?view=articlelist&shoppingListId=' . rawurlencode($shoppingListId));
                 break;
@@ -145,16 +155,39 @@ class Controller extends BaseObject
                 if ($user == null) {
                     $this->forwardRequest(['nicht eingeloggt']);
                 }
+
+                LogManager::logAction("ACTION_REMOVE_ARTICLE");
+
                 $articleId = $_REQUEST[self::ARTICLE_ID];
                 DataManager::removeArticle($articleId);
                 Util::redirect();
                 break;
+
+
+            case self::ACTION_CHANGE_ARTICLE_DONE:
+                $user = AuthenticationManager::getAuthenticatedUser();
+                if ($user == null) {
+                    $this->forwardRequest(['nicht eingeloggt']);
+                }
+
+                LogManager::logAction("ACTION_CHANGE_ARTICLE_DONE");
+
+                $articleId = $_REQUEST[self::ARTICLE_ID];
+                DataManager::invertArticleDoneStatus($articleId);
+                Util::redirect();
+                break;
+
+
+
 
             case self::ACTION_REMOVE_LIST:
                 $user = AuthenticationManager::getAuthenticatedUser();
                 if ($user == null) {
                     $this->forwardRequest(['nicht eingeloggt']);
                 }
+
+                LogManager::logAction("ACTION_REMOVE_LIST");
+
                 $shoppingListId = $_REQUEST[self::SHOPPING_LIST_ID];
                 DataManager::removeShoppingList($shoppingListId);
                 Util::redirect();
@@ -166,37 +199,16 @@ class Controller extends BaseObject
                     $this->forwardRequest(['nicht eingeloggt']);
                 }
 
+                LogManager::logAction("ACTION_TAKE_OVER_LIST");
                 $shoppingListId = $_REQUEST[self::SHOPPING_LIST_ID];
-
                 DataManager::takeOverShoppingList($shoppingListId, $user->getId());
                 Util::redirect();
                 break;
-
-            case self::ACTION_LOGIN:
-                if (!AuthenticationManager::authenticate($_REQUEST[self::USER_NAME], $_REQUEST[self::USER_PASSWORD])) {
-                    $this->forwardRequest(array('Invalid user name or password.'));
-                }
-                Util::redirect();
-                break;
-
             case self::ACTION_LOGOUT:
-                //sign out current user
                 AuthenticationManager::signOut();
-                Util::redirect();
+                LogManager::logAction("ACTION_LOGOUT");
+                Util::redirect('index.php?view=login');
                 break;
-
-
-
-                // case self::ACTION_ORDER:
-                //     $user = AuthenticationManager::getAuthenticatedUser();
-                //     if ($user == null) {
-                //         $this->forwardRequest(['Not logged in.']);
-                //     }
-                //     if (!$this->processCheckout($_POST[self::CC_NAME], $_POST[self::CC_NUMBER])) {
-                //         $this->forwardRequest(['Checkout failed']);
-                //     }
-                //     break;
-
             default:
                 throw new \Exception('Unknown controller action: ' . $action);
                 return null;
