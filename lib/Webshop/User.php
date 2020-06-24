@@ -17,7 +17,7 @@ class User extends Entity
   private $passwordHash;
   private $type;
 
-  public function __construct(int $id, string $userName, string $passwordHash, UserType $type)
+  public function __construct(int $id, string $userName, string $passwordHash, string $type)
   {
     parent::__construct($id);
     $this->userName = $userName;
@@ -35,7 +35,7 @@ class User extends Entity
     return $this->passwordHash;
   }
 
-  public function getUserType(): UserType
+  public function getUserType(): string
   {
     return $this->type;
   }

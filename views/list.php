@@ -5,12 +5,12 @@ use Webshop\Util;
 
 $categories = DataManager::getCategories();
 $categoryId = $_REQUEST['categoryId'] ?? null;
-// $books = (isset($categoryId) && ((int) $categoryId > 0)) ? DataManager::getBooksByCategory((int) $categoryId) : null;
+$articles = (isset($categoryId) && ((int) $categoryId > 0)) ? DataManager::getArticlesByCategory((int) $categoryId) : null;
 
 
 require_once('views/partials/header.php'); ?>
 <div class="page-header">
-    <h2>List of books category</h2>
+    <h2>List of Articles by category</h2>
 </div>
 
 <ul class="nav nav-tabs">
@@ -23,17 +23,17 @@ require_once('views/partials/header.php'); ?>
     <?php } ?>    
 </ul>
 
-<!-- <?php if (isset($books)) : ?>
+ <?php if (isset($articles)) : ?>
     <?php
-    if (sizeof($books) > 0) :
-        require('views/partials/booklist.php');
+    if (sizeof($articles) > 0) :
+        require('views/partials/articlelist.php');
     else :
         ?>
-        <div class="alert alert-warning" role="alert">No books in this category.</div>
+        <div class="alert alert-warning" role="alert">No Articles in this category.</div>
     <?php endif; ?>
 <?php else : ?>
     <div class="alert alert-info" role="alert">Please select a category.</div>
-<?php endif; ?> -->
+<?php endif; ?> 
 
 <?php require_once('views/partials/footer.php'); ?>
 

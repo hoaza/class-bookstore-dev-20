@@ -1,19 +1,18 @@
 <?php
 
-use Webshop\ShoppingList;
 use Webshop\Util; ?>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                Title
+                Name
             </th>
             <th>
-                Author
+                Anzahl
             </th>
             <th>
-                Price
+                Maximaler Preis
             </th>
             <th>
                 <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
@@ -22,37 +21,35 @@ use Webshop\Util; ?>
     </thead>
     <tbody>
         <?php
-        foreach ($books as $book) :
-            $inCart = ShoppingList::contains($book->getId());
+        foreach ($articles as $article) :
         ?>
             <tr>
                 <td><strong>
-                        <?php echo Util::escape($book->getTitle()); ?>
+                        <?php echo Util::escape($article->GetCaption()); ?>
                     </strong>
                 </td>
                 <td>
-                    <?php echo Util::escape($book->getAuthor()); ?>
+                    <?php echo Util::escape($article->getQuantity()); ?>
                 </td>
                 <td>
-                    <?php // echo money_format('%i', Util::escape($book->getPrice()));
-                    echo Util::escape($book->getPrice());
-                    ?>
+                    <?php echo Util::escape($article->getMaxPrice()); ?>
                 </td>
                 <td class="add-remove">
-                    <?php if ($inCart) : ?>
-                        <form method="post" action="<?php echo Util::action(Webshop\Controller::ACTION_REMOVE, array('bookId' => $book->getId())); ?>">
+                    
+                        <form method="post" action="<?php echo Util::action(Webshop\Controller::ACTION_REMOVE, array('articleId' => $article->getId())); ?>">
                             <button type="submit" role="button" class="btn btn-default btn-xs btn-info">
                                 <span class="glyphicon glyphicon-minus"></span>
                             </button>
                         </form>
-                    <?php else : ?>
-                        <form method="post" action="<?php echo Util::action(Webshop\Controller::ACTION_ADD, array('bookId' => $book->getId())); ?>">
+
+                 
+                        <!-- <form method="post" action="<?php echo Util::action(Webshop\Controller::ACTION_ADD, array('articleId' => $article->getId())); ?>">
                             <button type="submit" role="button" class="btn btn-default btn-xs btn-success">
                                 <span class="glyphicon glyphicon-plus"></span>
                             </button>
-                        </form>
-                    <?php endif;  ?>
-                </td>
+                        </form> -->
+     
+                <!-- </td> -->
             </tr>
         <?php endforeach; ?>
     </tbody>

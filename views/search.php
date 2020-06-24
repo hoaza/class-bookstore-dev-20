@@ -46,7 +46,7 @@ require_once('views/partials/header.php');
 
         <?php
         $books = $page->getResult();
-        require('views/partials/booklist.php');
+        require('views/partials/articlelist.php');
         ?>
 
         <p>

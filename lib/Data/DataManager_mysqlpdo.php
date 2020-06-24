@@ -307,8 +307,9 @@ class DataManager implements IDataManager
             WHERE userName = ?;
         ", [$userName]);
         if ($u = self::fetchObject($res)) {
-            // UserType $type = UserType::NEEDSHELP;
+            // $type = UserType::NEEDSHELP;
 
+            
             // if ($u->type == "NEEDSHELP" ? UserType::NEEDSHELP : UserType::ENTREPRENEUR){
             //     $type = UserType::NEEDSHELP;
             // }
@@ -316,9 +317,8 @@ class DataManager implements IDataManager
             //     $type = UserType::ENTREPRENEUR;
             // }
             // else{
-            //     throw new Exception("UserType " + $u->type + " doesnt exists in Code");
+            //     // throw new Exception("UserType " + $u->type + " doesnt exists in Code");
             // }
- 
 
             $user = new User($u->id, $u->userName, $u->passwordHash, $u->type);
         }
