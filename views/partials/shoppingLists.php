@@ -93,7 +93,7 @@ $user = AuthenticationManager::getAuthenticatedUser();
                         </form>
                     </td>
                 <?php } ?>
-                <?php if ($user->isTypeOf(UserType::ENTREPRENEUR) && is_null($list->getEntrepreneurUserId()) == false) { ?>
+                <?php if ($user->isTypeOf(UserType::ENTREPRENEUR) && is_null($list->getEntrepreneurUserId()) == false && $list->getClosed() == false) { ?>
                     <div class="modal fade" id="modalLoginForm<?php echo Util::escape($list->getId()) ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-sm" role="document">
                             <div class="modal-content">

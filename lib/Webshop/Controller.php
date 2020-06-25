@@ -217,41 +217,6 @@ class Controller extends BaseObject
     }
 
 
-    protected function processCheckout(string $nameOnCard = null, string $cardNumber = null): bool
-    {
-        // $errors = [];
-
-        // if ($nameOnCard == null || strlen($nameOnCard) == 0) {
-        //     $errors[] = 'Invalid name on card';
-        // }
-        // if ($cardNumber == null || strlen($cardNumber) != 16 || !ctype_digit($cardNumber)) {
-        //     $errors[] = 'Card number must be sixteen digits';
-        // }
-
-        // if (sizeof($errors) > 0) {
-        //     $this->forwardRequest($errors);
-        //     return false;
-        // }
-
-        // // check cart
-        // if (ShoppingList::size() == 0) {
-        //     $this->forwardRequest(['Shopping cart is empty']);
-        //     return false;
-        // }
-
-        // $user = AuthenticationManager::getAuthenticatedUser();
-        // $orderId = \Data\DataManager::createOrder($user->getId(), ShoppingList::getAll(), $nameOnCard, $cardNumber);
-        // if (!$orderId) {
-        //     $this->forwardRequest(['Could not create order']);
-        //     return false;
-        // }
-        // ShoppingList::clear();
-        // Util::redirect('index.php?view=success&orderId=' . rawurlencode($orderId));
-
-        return true;
-    }
-
-
     /**
      *
      * @param array $errors : optional assign it to
