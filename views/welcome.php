@@ -3,7 +3,7 @@
     <h2>Welcome</h2>
 </div>
 
-<p>Webshop</p>
+<p>Loggen Sie sich ein um alle Funktionen benutzen zu können!</p>
 
 <!-- <?php 
 // $book = new Webshop\Book(1, 1, "ein title", "ein autor", 12.45);

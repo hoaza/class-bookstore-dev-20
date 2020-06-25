@@ -38,11 +38,6 @@ class DataManager implements IDataManager
     {
         $connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         try {
-            // SELECT * FROM book WHERE id = ? AND price > ?
-            /*
-             * $parameters = [1, 12.00]
-             *
-             */
             $statement = $connection->prepare($query);
             $i = 1;
             foreach ($parameters as $param) {
