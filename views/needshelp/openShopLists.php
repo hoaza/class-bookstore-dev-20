@@ -8,6 +8,10 @@ $user = AuthenticationManager::getAuthenticatedUser();
 $userId = isset($user) ? $user->getId() : null;
 (isset($userId) && ((int) $userId > 0)) ? $shoppingLists = DataManager::getUnlinkedShoppingListsByUserId($userId) : null;
 
+if (!AuthenticationManager::isAuthenticated()) {
+    Util::redirect("index.php?view=login"); 
+}
+
 $caption = $_REQUEST[Webshop\Controller::SHOPPING_LIST_CAPTION] ?? null;
 $dueDateTime = $_REQUEST[Webshop\Controller::SHOPPING_LIST_DUEDATETIME] ?? null;
 

@@ -20,13 +20,20 @@ class Util extends BaseObject {
      * @param string $page  uri optional
      * @return null
      */
-    public static function redirect(string $page = null) {
+    public static function redirect(string $page = null, array $successMessages = null) {
         if ($page == null) {
             $page = isset($_REQUEST[Controller::PAGE]) ?
                 $_REQUEST[Controller::PAGE] :
                 $_SERVER['REQUEST_URI'];
         }
-        header("Location: $page");
+
+        if ($successMessages != null && count($successMessages) > 0){
+            $page .= '&successMessages=' . urlencode(serialize($successMessages));
+            $page .= '&errors=';
+        }
+
+        header("location:" . $page);
+
         exit();
     }
 

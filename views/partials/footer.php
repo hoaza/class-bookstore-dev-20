@@ -1,4 +1,4 @@
-<!--display error messages-->
+<!--display messages-->
 
 <?php
 
@@ -12,9 +12,20 @@ if (isset($errors) && is_array($errors)): ?>
         <?php endforeach; ?>
       </ul>
     </div>
+<?php endif; 
+
+if (isset($successMessages) && is_array($successMessages)): ?>
+    <div class="alert alert-success">
+      <ul>
+        <?php foreach ($successMessages as $errMsg): ?>
+          <li><?php echo(Util::escape($errMsg)); ?></li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
 <?php endif; ?>
 
-<!--/display error messages-->
+<!--/display messages-->
+
     <div class="footer">
 
         <hr />

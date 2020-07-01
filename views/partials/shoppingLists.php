@@ -6,6 +6,10 @@ use Webshop\Util, Data\DataManager, Webshop\AuthenticationManager;
 
 $user = AuthenticationManager::getAuthenticatedUser();
 
+if (!AuthenticationManager::isAuthenticated()) {
+    Util::redirect("index.php?view=login"); 
+}
+
 ?>
 
 <table class="table table-striped">

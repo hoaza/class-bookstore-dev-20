@@ -15,7 +15,7 @@ class Controller extends BaseObject
     const ACTION_SHOW_ARTICLES = 'showArticles';
     const ACTION_REMOVE_ARTICLE = 'removeFromShoppingList';
     const ACTION_CHANGE_ARTICLE_DONE = 'ACTION_CHANGE_ARTICLE_DONE';
-    
+
 
     const ACTION_REMOVE_LIST = 'ACTION_REMOVE_LIST';
     const ACTION_TAKE_OVER_LIST = 'ACTION_TAKE_OVER_LIST';
@@ -91,11 +91,20 @@ class Controller extends BaseObject
                 LogManager::logAction("ACTION_ADD_SHOPPING_LIST");
 
                 $caption = $_POST[self::SHOPPING_LIST_CAPTION];
+
+                if ($caption == null  || is_string($caption) == false || empty(trim($caption))) {
+                    $this->forwardRequest(['Ungültiger Name, Der Name der Einkaufsliste darf nicht leer sein!']);
+                }
+
                 $dueDateTime = $_POST[self::SHOPPING_LIST_DUEDATETIME];
+
+                if ($dueDateTime == null  || strtotime($dueDateTime) == false || strtotime($dueDateTime) < strtotime('-1 day', time())) {
+                    $this->forwardRequest(['Ungültiges Datum, Das Datum der Einkaufsliste darf nicht leer sein und muss in der Zukunft sein!']);
+                }
 
                 DataManager::createShoppingList($user->getId(), $caption, $dueDateTime);
 
-                Util::redirect();
+                Util::redirect(null, ['Einkaufsliste erfolgreich eingefügt!']);
                 break;
 
             case self::ACTION_CLOSE_SHOPPING_LIST:
@@ -114,7 +123,7 @@ class Controller extends BaseObject
 
                 DataManager::closeShoppingList($shoppingListId, $maxPrice);
 
-                Util::redirect();
+                Util::redirect(null, ['Einkaufsliste erfolgreich geschlossen!']);
                 break;
 
             case self::ACTION_ADD_ARTICLE:
@@ -129,13 +138,28 @@ class Controller extends BaseObject
                 LogManager::logAction("ACTION_ADD_ARTICLE");
 
                 $shoppingListId = $_POST[self::SHOPPING_LIST_ID];
+
                 $caption = $_POST[self::ARTICLE_CAPTION];
+
+                if ($caption == null  || is_string($caption) == false || empty(trim($caption))) {
+                    $this->forwardRequest(['Ungültiger Name, Der Name des Artikels darf nicht leer sein!']);
+                }
+
                 $quantity = $_POST[self::ARTICLE_QUANTITY];
+
+                if ($quantity == null  || is_numeric($quantity) == false || $quantity <= 0) {
+                    $this->forwardRequest(['Ungültige Anzahl, Die Anzahl des Artikels darf nicht leer und muss größer als 0 sein!']);
+                }
+
                 $maxPrice = $_POST[self::ARTICLE_MAX_PRICE];
+
+                if ($maxPrice == null  || is_numeric($maxPrice) == false || $maxPrice <= 0) {
+                    $this->forwardRequest(['Ungültiger Preis, Der Preis des Artikels darf nicht leer und muss größer als 0 sein!']);
+                }
 
                 DataManager::createArticle($shoppingListId, $caption, $quantity, $maxPrice);
 
-                Util::redirect();
+                Util::redirect(null, ['Artikel erfolgreich eingefügt!']);
                 break;
 
             case self::ACTION_SHOW_ARTICLES:
@@ -160,7 +184,7 @@ class Controller extends BaseObject
 
                 $articleId = $_REQUEST[self::ARTICLE_ID];
                 DataManager::removeArticle($articleId);
-                Util::redirect();
+                Util::redirect(null, ['Artikel erfolgreich gelöscht!']);
                 break;
 
 
@@ -174,12 +198,8 @@ class Controller extends BaseObject
 
                 $articleId = $_REQUEST[self::ARTICLE_ID];
                 DataManager::invertArticleDoneStatus($articleId);
-                Util::redirect();
+                Util::redirect(null, ['Status des Artikels erfolgreich umgestellt!']);
                 break;
-
-
-
-
             case self::ACTION_REMOVE_LIST:
                 $user = AuthenticationManager::getAuthenticatedUser();
                 if ($user == null) {
@@ -190,7 +210,7 @@ class Controller extends BaseObject
 
                 $shoppingListId = $_REQUEST[self::SHOPPING_LIST_ID];
                 DataManager::removeShoppingList($shoppingListId);
-                Util::redirect();
+                Util::redirect(null, ['Einkaufsliste erfolgreich gelöscht!']);
                 break;
 
             case self::ACTION_TAKE_OVER_LIST:
@@ -202,7 +222,7 @@ class Controller extends BaseObject
                 LogManager::logAction("ACTION_TAKE_OVER_LIST");
                 $shoppingListId = $_REQUEST[self::SHOPPING_LIST_ID];
                 DataManager::takeOverShoppingList($shoppingListId, $user->getId());
-                Util::redirect();
+                Util::redirect(null, ['Einkaufsliste erfolgreich übernommen!']);
                 break;
             case self::ACTION_LOGOUT:
                 AuthenticationManager::signOut();
@@ -235,7 +255,10 @@ class Controller extends BaseObject
         // optional - add errors to redirect and process them in view
         if (count($errors) > 0)
             $target .= '&errors=' . urlencode(serialize($errors));
+            $target .= '&successMessages=';
+
         header('location: ' . $target);
+
         exit();
     }
 }

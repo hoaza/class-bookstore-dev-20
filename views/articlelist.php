@@ -8,6 +8,10 @@ use Webshop\Util;
 $user = AuthenticationManager::getAuthenticatedUser();
 $userId = isset($user) ? $user->getId() : null;
 
+if (!AuthenticationManager::isAuthenticated()) {
+    Util::redirect("index.php?view=login"); 
+}
+
 $shoppingListId = $_GET['shoppingListId'];
 $list;
 $articles = array();

@@ -8,6 +8,9 @@ $user = AuthenticationManager::getAuthenticatedUser();
 $userId = isset($user) ? $user->getId() : null;
 (isset($userId) && ((int) $userId > 0)) ? $shoppingLists = DataManager::getLinkedShoppingListsByStateAndUserId(true, $userId) : null;
 
+if (!AuthenticationManager::isAuthenticated()) {
+    Util::redirect("index.php?view=login"); 
+}
 
 require_once('views/partials/header.php'); ?>
 <div class="page-header">

@@ -7,6 +7,13 @@ $user = Webshop\AuthenticationManager::getAuthenticatedUser();
 if (isset($_GET['errors'])) {
     $errors = unserialize(urldecode($_GET['errors']));
 }
+else{
+    $errors = null;
+}
+if (isset($_GET['successMessages'])) {
+    $successMessages = unserialize(urldecode($_GET['successMessages']));
+}
+
 
 ?>
 
