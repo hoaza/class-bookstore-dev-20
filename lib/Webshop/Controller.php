@@ -16,7 +16,6 @@ class Controller extends BaseObject
     const ACTION_REMOVE_ARTICLE = 'removeFromShoppingList';
     const ACTION_CHANGE_ARTICLE_DONE = 'ACTION_CHANGE_ARTICLE_DONE';
 
-
     const ACTION_REMOVE_LIST = 'ACTION_REMOVE_LIST';
     const ACTION_TAKE_OVER_LIST = 'ACTION_TAKE_OVER_LIST';
     const ACTION_CLOSE_SHOPPING_LIST = 'ACTION_CLOSE_SHOPPING_LIST';
@@ -74,9 +73,11 @@ class Controller extends BaseObject
                     $this->forwardRequest(array('Invalid user name or password.'));
                 }
 
+                $user = AuthenticationManager::getAuthenticatedUser();
+
                 LogManager::logAction("ACTION_LOGIN");
 
-                Util::redirect();
+                Util::redirect('index.php?view=' . $user->getTypeString() . '/openShopLists');
                 break;
 
             case self::ACTION_ADD_SHOPPING_LIST:
@@ -121,9 +122,14 @@ class Controller extends BaseObject
                 $shoppingListId = $_POST[self::SHOPPING_LIST_ID];
                 $maxPrice = $_POST[self::ARTICLE_MAX_PRICE];
 
+                if ($maxPrice == null  || is_numeric($maxPrice) == false || $maxPrice < 0) {
+                    $this->forwardRequest(['Ungültiger Preis, Der Preis darf nicht leer und muss größer als 0 sein!']);
+                }
+
+
                 DataManager::closeShoppingList($shoppingListId, $maxPrice);
 
-                Util::redirect(null, ['Einkaufsliste erfolgreich geschlossen!']);
+                Util::redirect(null, ['Einkaufsliste erfolgreich abgeschlossen!']);
                 break;
 
             case self::ACTION_ADD_ARTICLE:
@@ -153,7 +159,7 @@ class Controller extends BaseObject
 
                 $maxPrice = $_POST[self::ARTICLE_MAX_PRICE];
 
-                if ($maxPrice == null  || is_numeric($maxPrice) == false || $maxPrice <= 0) {
+                if ($maxPrice == null  || is_numeric($maxPrice) == false || $maxPrice < 0) {
                     $this->forwardRequest(['Ungültiger Preis, Der Preis des Artikels darf nicht leer und muss größer als 0 sein!']);
                 }
 
@@ -192,6 +198,8 @@ class Controller extends BaseObject
                 $user = AuthenticationManager::getAuthenticatedUser();
                 if ($user == null) {
                     $this->forwardRequest(['nicht eingeloggt']);
+                }else if ($user->getTypeString() != UserType::ENTREPRENEUR){
+                    $this->forwardRequest(['keine Berechtigung']);
                 }
 
                 LogManager::logAction("ACTION_CHANGE_ARTICLE_DONE");
