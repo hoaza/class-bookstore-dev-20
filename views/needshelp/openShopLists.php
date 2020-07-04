@@ -2,13 +2,14 @@
 
 use Data\DataManager;
 use Webshop\AuthenticationManager;
+use Webshop\UserType;
 use Webshop\Util;
 
 $user = AuthenticationManager::getAuthenticatedUser();
 $userId = isset($user) ? $user->getId() : null;
-(isset($userId) && ((int) $userId > 0)) ? $shoppingLists = DataManager::getUnlinkedShoppingListsByUserId($userId) : null;
+(isset($userId) && ((int) $userId > 0) && $user->isTypeOf(UserType::NEEDSHELP))  ? $shoppingLists = DataManager::getUnlinkedShoppingListsByUserId($userId) : null;
 
-if (!AuthenticationManager::isAuthenticated()) {
+if (!AuthenticationManager::isAuthenticated() || !$user->isTypeOf(UserType::NEEDSHELP)) {
     Util::redirect("index.php?view=login"); 
 }
 
